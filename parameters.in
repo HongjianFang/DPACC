@@ -24,4 +24,4 @@
 'datatype' : 'raw'
 'phishift' : 0
 'figdir' : 'figures_test/'
-'eqdir' : '../testmaunalsyn'
+'eqdir' : '../chile4.5_syn3'
