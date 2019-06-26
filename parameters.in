@@ -1,27 +1,50 @@
+# trim before x secs
 'trimb' : 10
+# trim after x secs
 'trima' : 140
+# minimum frequency band
 'frqmin' : 0.2
+# maximum frequency band
 'frqmax' : 2.0
+# resampling rate
 'rsample' : 10
+# endtime length for plotting
 'endtime' : 100
+# taper ratio, % percent
 'tpratio' : 0.05
+# wavelet for time domain correlation, before predicted t
 'sig_bs' : 5
+# wavelet for time domain correlation, after predicted t
 'sig_es' : 20
-'winlen' : 15
+# envolope or not
 'envolope' : 0
+# time domain or frequency domain
 'timedomain' : 1
+# number of depths for depth projection
 'ndep' : 41
+# \mu for phase weighted stacking
 'mu' : 2.0
+# minimum depth for maping
 'mindep' : -20
+# maximum depth
 'maxdep' : 20
+# minimum epicentral distance 
 'mindist' : 30
+# maximum epicentral distance 
 'maxdist' : 90
+# using 'P' or 'S'
 'phase' : 'P'
+# which components
 'comp' : 'BHZ'
+# reference distance of move-out correction
 'refdismax' : 70
+# phase weighted stacking V.S. linear stacking
 'pws' : 1
+# convolution length in frequency reweighting
 'conlen' : 10
+# datadir, 'raw' or 'processed'
 'datatype' : 'raw'
-'phishift' : 0
+# dir for saving figures
 'figdir' : 'figures_test/'
+# data dir
 'eqdir' : '../testmaunalsyn'
