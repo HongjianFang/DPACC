@@ -6,7 +6,7 @@
 #
 # Creation Date : 22-06-2019
 #
-# Last Modified : Sun Jun 23 19:16:48 2019
+# Last Modified : Sun Jun 23 23:36:56 2019
 #
 # Created By : Hongjian Fang: hfang@mit.edu 
 #
@@ -190,7 +190,7 @@ def plot_event(strmacc1,strmori):
 
     buall = np.zeros(npts,)
     phi = np.zeros((npts,),dtype=complex)
-    idx = random.sample(idx,useidx)
+    idx = random.sample(list(idx),useidx)
     reftime = fppdp(refdismax,evdep1)
     for ii in idx:
         bu = np.zeros(npts,)
@@ -199,7 +199,7 @@ def plot_event(strmacc1,strmori):
         reflat = np.rad2deg(aslat[cellidx[0]])
         reflon = np.rad2deg(aslon[cellidx[0]])
         disref = distaz.DistAz(evlat1,evlon1,reflat,reflon)
-        sidx = random.sample(cellidx,1)[0]
+        sidx = random.sample(list(cellidx),1)[0]
         refdis = strmacc1[sidx].stats.distance
         ctime = fppdp(refdis,evdep1)
         ctime = reftime-ctime
@@ -452,8 +452,8 @@ fspdp = interpolate.interp2d(dis, dep, sPdP, kind='linear')
 pPdP = np.load('./tables/tele30to330.npy')
 ftelep = interpolate.interp2d(dis, dep, pPdP, kind='linear')
 
-eqs = open(''.join([eqdir,'/EVENTS-INFO/event_list_pickle']))
-eqs = pickle.load(eqs)
+eqs = open(''.join([eqdir,'/EVENTS-INFO/event_list_pickle']),'rb')
+eqs = pickle.load(eqs,encoding='bytes')
 evid = []
 
 for ii in eqs:
@@ -467,7 +467,7 @@ npoints = int(endtime*rsample+1)
 #global evelist
 evelist = glob.glob(eqdir+'/*a')
 nevent = len(evelist) 
-irissta = pd.read_table('./tables/IRISSTA9019.txt',names=('net','sta','lat','lon'),header=0,delim_whitespace=True,keep_default_na=False)
+irissta = pd.read_table('./tables/IRISSTA0319.txt',names=('net','sta','lat','lon'),header=0,delim_whitespace=True,keep_default_na=False)
 
 evdepinv = np.zeros(nevent)
 evdep = np.zeros(nevent)
