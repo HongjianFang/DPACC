@@ -45,6 +45,8 @@
 # datadir, 'raw' or 'processed'
 'datatype' : 'raw'
 # dir for saving figures
-'figdir' : 'figures_test/'
+'figdir' : 'figures_chile/'
 # data dir
-'eqdir' : '../testmaunalsyn'
+#'eqdir' : '../testmaunalsyn'
+#'eqdir' : '../japan_seis50to300_2'
+'eqdir' : '../chileall'
