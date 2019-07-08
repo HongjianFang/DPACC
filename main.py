@@ -6,7 +6,7 @@
 #
 # Creation Date : 22-06-2019
 #
-# Last Modified : Wed Jun 26 23:36:10 2019
+# Last Modified : Sun Jul  7 23:09:12 2019
 #
 # Created By : Hongjian Fang: hfang@mit.edu 
 #
@@ -89,7 +89,7 @@ def single_event(ievent):
     strmacc1 = obspy.core.stream.Stream()
     strmori = obspy.core.stream.Stream()
 
-    if evdep1<30.0:
+    if evdep1<5.0:
         print ( evdep1 )
         return strmacc1,strmori
           
@@ -103,25 +103,37 @@ def single_event(ievent):
                 if dis1.delta<mindist or dis1.delta>maxdist:
                     continue
                 #return strmacc1,strmori
-
-                trace = '/'.join([eqdir,evname1,datatype,stalist[idx[ista]]])
-
-                strm = obspy.read(trace)
-                tr = strm[0]
-                if tr.stats.npts < 50:
-                    continue
-                #return strmacc1,strmori
-                tr.stats.coordinates=AttribDict({'latitude':stlat,'longitude':stlon,'elevation':0})
-                
-
                 if phase == 'P':
                     parr = ftelep(dis1.delta,evdep1)[0]  
                 else:
                     parr = fteles(dis1.delta,evdep1)[0]
+
+                trace = '/'.join([eqdir,evname1,datatype,stalist[idx[ista]]])
+
+                strm = obspy.read(trace)
+                if comp == 'BHE':
+                    tracen = trace.split('.')[:-1]
+                    tracen = '.'.join(tracen+['BHN'])
+                    if not os.path.isfile(tracen):
+                      continue
+                    strm += obspy.read(tracen)
+                    strm.resample(rsample)
+                    strm.trim(evtime1+parr-trimb,evtime1+parr+trima,pad=True,fill_value=0)
+                    #print(strm)
+                    strm.rotate('NE->RT',back_azimuth=dis1.baz)
+                    tracet = strm.select(channel='BHT')
+                    strm.remove(tracet[0])
+                else:
+                    strm.trim(evtime1+parr-trimb,evtime1+parr+trima,pad=True,fill_value=0)
+                    strm.resample(rsample)
+
+                tr = strm[0]
                 tr.stats.distance = dis1.delta#inc_angle
                 tr.stats.baz = dis1.baz
-                tr.trim(evtime1+parr-trimb,evtime1+parr+trima,pad=True,fill_value=0)
-                tr.resample(rsample)
+                if tr.stats.npts < 50:
+                    continue
+                #return strmacc1,strmori
+                tr.stats.coordinates=AttribDict({'latitude':stlat,'longitude':stlon,'elevation':0})
                 npts = tr.stats.npts
                 tr.stats.starttime = 0
                 tr.detrend()
@@ -140,7 +152,7 @@ def single_event(ievent):
                 if timedomain:
                     tr = autocorr_td(tr,sig_bs,sig_es,conlen=conlen)
                 else:
-                    tr = autocorr_fd(tr,phaseshift=phishift)
+                    tr = autocorr_fd(tr,conlen=conlen)
 
 
                 npts = tr.stats.npts
@@ -392,22 +404,6 @@ def plot_event_map(strmacc1,strmori):
             stackenergys += data[stackidx]
         depstack[idep] = stackenergyp
         depstacks[idep] = stackenergys
-#    data = np.zeros((naz,npts))
-#    for ii in range(naz):
-#        for jj in range(ndepc):        
-#            data[ii,:] += stackazi[:,jj,ii]/np.max(abs(stackazi[:,jj,ii]))
-#    stack = np.zeros(npts,)
-#    for ii in range(naz):
-#        if nstaazi[0,ii] >5:
-#            stack += np.abs(hilbert(data[ii,:]*nstaazi[0,ii]/nsta))
-#    datasave_sub['stack'] = stack
-#    ax4 = fig.add_subplot(515)
-#    for idep in range(ndep):
-#        evdep2 = evdep1+ddep[idep]
-#        pPtime = fppdp(refdismax,evdep2)[0]
-#        sPtime = fspdp(refdismax,evdep2)[0]
-#    
-#        depstack[idep] = 0.6*stack[int(sPtime*rsample)]**2+0.4*stack[int(pPtime*rsample)]**2
     ax4 = fig.add_subplot(515)
     ax4.plot(ddep,depstack,'ro-')
     ax4.plot(ddep,depstacks,'b*-')
@@ -707,18 +703,29 @@ datatype = par['datatype']
 figdir = par['figdir']
 eqdir = par['eqdir']
 
-ndepth = 301
-ndis = 131
-dep = np.linspace(30,330,ndepth)
+ndep = 46
+ndis = 651
+dep = np.linspace(5,50,ndep)
 dis = np.linspace(30,95,ndis)
-pPdP = np.load('./tables/pPdP30to330.npy')
-fppdp = interpolate.interp2d(dis, dep, pPdP, kind='linear')
-
-sPdP = np.load('./tables/sPdP30to330.npy')
+sPdP = np.load('./tables/sSdS5to50.npy')
+fppdp = interpolate.interp2d(dis, dep, sPdP, kind='linear')
 fspdp = interpolate.interp2d(dis, dep, sPdP, kind='linear')
 
-pPdP = np.load('./tables/tele30to330.npy')
+pPdP = np.load('./tables/teleS5to50.npy')
 ftelep = interpolate.interp2d(dis, dep, pPdP, kind='linear')
+
+#ndepth = 301
+#ndis = 131
+#dep = np.linspace(30,330,ndepth)
+#dis = np.linspace(30,95,ndis)
+#pPdP = np.load('./tables/pPdP30to330.npy')
+#fppdp = interpolate.interp2d(dis, dep, pPdP, kind='linear')
+#
+#sPdP = np.load('./tables/sPdP30to330.npy')
+#fspdp = interpolate.interp2d(dis, dep, sPdP, kind='linear')
+#
+#pPdP = np.load('./tables/tele30to330.npy')
+#ftelep = interpolate.interp2d(dis, dep, pPdP, kind='linear')
 
 eqs = open(''.join([eqdir,'/EVENTS-INFO/event_list_pickle']),'rb')
 # for py3
@@ -737,7 +744,7 @@ npoints = int(endtime*rsample+1)
 #global evelist
 evelist = glob.glob(eqdir+'/*a')
 nevent = len(evelist) 
-irissta = pd.read_table('./tables/IRISSTA9019.txt',names=('net','sta','lat','lon'),header=0,delim_whitespace=True,keep_default_na=False)
+irissta = pd.read_table('./tables/IRISSTA0319.txt',names=('net','sta','lat','lon'),header=0,delim_whitespace=True,keep_default_na=False)
 
 evdepinv = np.zeros(nevent)
 evdep = np.zeros(nevent)
@@ -745,7 +752,7 @@ evlon = np.zeros(nevent)
 sampleevent = nevent
 datasave = []
 
-for ievent in range(52,130):#nevent):
+for ievent in range(0,nevent):
     ievent1 = ievent
     evname1 = evelist[ievent1].split('/')[-1]
     evidx1 = evid.index(evname1)
