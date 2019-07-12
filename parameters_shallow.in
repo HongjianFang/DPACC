@@ -1,7 +1,7 @@
 # trim before x secs
-'trimb' : 20
+'trimb' : 10
 # trim after x secs
-'trima' : 100
+'trima' : 50
 # minimum frequency band
 'frqmin' : 0.2
 # maximum frequency band
@@ -9,7 +9,7 @@
 # resampling rate
 'rsample' : 10
 # endtime length for plotting
-'endtime' : 100
+'endtime' : 40
 # taper ratio, % percent
 'tpratio' : 0.02
 # wavelet for time domain correlation, before predicted t
@@ -45,9 +45,8 @@
 # datadir, 'raw' or 'processed'
 'datatype' : 'raw'
 # dir for saving figures
-'figdir' : 'figures_chile/'
+'figdir' : 'figures_chain/'
 # data dir
 #'eqdir' : '../testmaunalsyn'
 #'eqdir' : '../japan_seis50to300_2'
-#'eqdir' : '../transform_0to30'
-'eqdir' : './chile_5to40'
+'eqdir' : '../transform_0to30'

@@ -6,7 +6,7 @@
 #
 # Creation Date : 22-06-2019
 #
-# Last Modified : Sun Jul  7 23:09:12 2019
+# Last Modified : Thu Jul 11 22:49:11 2019
 #
 # Created By : Hongjian Fang: hfang@mit.edu 
 #
@@ -39,7 +39,7 @@ def autocorr_td(tr,stalign_a,stalign_b,conlen=15):
         delta = tr.stats.delta
         yf = fft(tr.data)
         ayf = np.abs(yf)
-        conlen = 15
+        #conlen = 15
         myf = np.convolve(ayf, np.ones((conlen,))/conlen, mode='same')
         yf = yf/myf
         xx = np.real(ifft(yf))
@@ -121,7 +121,7 @@ def single_event(ievent):
                     strm.trim(evtime1+parr-trimb,evtime1+parr+trima,pad=True,fill_value=0)
                     #print(strm)
                     strm.rotate('NE->RT',back_azimuth=dis1.baz)
-                    tracet = strm.select(channel='BHT')
+                    tracet = strm.select(channel='BHR')
                     strm.remove(tracet[0])
                 else:
                     strm.trim(evtime1+parr-trimb,evtime1+parr+trima,pad=True,fill_value=0)
