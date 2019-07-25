@@ -1,15 +1,15 @@
 # trim before x secs
-'trimb' : 10
+'trimb' : 20
 # trim after x secs
-'trima' : 140
+'trima' : 250
 # minimum frequency band
 'frqmin' : 0.5
 # maximum frequency band
-'frqmax' : 2.0
+'frqmax' : 4.0
 # resampling rate
 'rsample' : 10
 # endtime length for plotting
-'endtime' : 100
+'endtime' : 250
 # taper ratio, % percent
 'tpratio' : 0.01
 # wavelet for time domain correlation, before predicted t
@@ -25,13 +25,13 @@
 # \mu for phase weighted stacking
 'mu' : 2.0
 # minimum depth for maping
-'mindep' : -20
+'mindep' : -40
 # maximum depth
-'maxdep' : 20
+'maxdep' : 40
 # minimum epicentral distance 
-'mindist' : 30
+'mindist' : 40
 # maximum epicentral distance 
-'maxdist' : 90
+'maxdist' : 95
 # using 'P' or 'S'
 'phase' : 'P'
 # which components
@@ -45,8 +45,9 @@
 # datadir, 'raw' or 'processed'
 'datatype' : 'processed'
 # dir for saving figures
-'figdir' : 'figures_eqs50to300high2/'
+'figdir' : 'boniniris3/'
 # data dir
-'eqdir' : '../eqs50to300CI'
+'eqdir' : '../bonin0530iris'
+#'eqdir' : '../eqs50to300CI'
 #'eqdir' : '../japan_seis50to300_2'
 #'eqdir' : '../chileall'

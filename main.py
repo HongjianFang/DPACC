@@ -6,7 +6,7 @@
 #
 # Creation Date : 22-06-2019
 #
-# Last Modified : Thu Jul 11 22:49:11 2019
+# Last Modified : Tue Jul 23 21:27:46 2019
 #
 # Created By : Hongjian Fang: hfang@mit.edu 
 #
@@ -30,6 +30,7 @@ import pandas as pd
 from obspy.signal.filter import bandpass
 import yaml
 import cluster
+import sys
 #import acc
 #import single_event
 #import plot_event
@@ -111,6 +112,8 @@ def single_event(ievent):
                 trace = '/'.join([eqdir,evname1,datatype,stalist[idx[ista]]])
 
                 strm = obspy.read(trace)
+                strm.merge()
+                
                 if comp == 'BHE':
                     tracen = trace.split('.')[:-1]
                     tracen = '.'.join(tracen+['BHN'])
@@ -121,8 +124,9 @@ def single_event(ievent):
                     strm.trim(evtime1+parr-trimb,evtime1+parr+trima,pad=True,fill_value=0)
                     #print(strm)
                     strm.rotate('NE->RT',back_azimuth=dis1.baz)
-                    tracet = strm.select(channel='BHR')
-                    strm.remove(tracet[0])
+                    tracet = strm.select(channel='BHT')
+                    strm  = tracet
+                    #strm.remove(tracet[0])
                 else:
                     strm.trim(evtime1+parr-trimb,evtime1+parr+trima,pad=True,fill_value=0)
                     strm.resample(rsample)
@@ -398,7 +402,8 @@ def plot_event_map(strmacc1,strmori):
             pPtime = fppdp(dist,depnew[idep])
             sPtime = fspdp(dist,depnew[idep])
             stackidx = int(pPtime*rsample)
-            data = (strmacc1[ii].data)
+            #data = abs(hilbert(strmacc1[ii].data))
+            data = strmacc1[ii].data
             stackenergyp += data[stackidx]
             stackidx = int(sPtime*rsample)
             stackenergys += data[stackidx]
@@ -411,7 +416,7 @@ def plot_event_map(strmacc1,strmori):
     ymax = np.max([depstack.max(),10.0])
     #ax4.set_ylim([-0.1,ymax])
     ax4.set_title('Mapping to depth_'+str(evdep1))
-    fig.savefig(figdir+'/'+str(ievent)+'_'+evname1+'_Mw'+str(evmag1)+'_dep.png',dpi=200)
+    fig.savefig(figdir+'/'+str(ievent)+'_'+evname1+'_Mw'+str(evmag1)+str(comp)+'_dep.png',dpi=200)
     plt.ioff()
     plt.close()
     datasave_sub['stackenv'] = stack
@@ -674,7 +679,11 @@ def plot_event(strmacc1,strmori):
     datasave_sub['dist'] = refdismax
     datasave_sub['saveid'] = ievent
     return datasave_sub
-with open('parameters.in','r') as fin:
+if len(sys.argv) == 1:
+  parafile = 'parameters.in'
+else:
+  parafile = str(sys.argv[1])
+with open(parafile,'r') as fin:
     par = yaml.load(fin)
 
 trimb = par['trimb']
@@ -703,16 +712,28 @@ datatype = par['datatype']
 figdir = par['figdir']
 eqdir = par['eqdir']
 
-ndep = 46
-ndis = 651
-dep = np.linspace(5,50,ndep)
-dis = np.linspace(30,95,ndis)
-sPdP = np.load('./tables/sSdS5to50.npy')
-fppdp = interpolate.interp2d(dis, dep, sPdP, kind='linear')
-fspdp = interpolate.interp2d(dis, dep, sPdP, kind='linear')
+#ndep = 46
+#ndis = 651
+#dep = np.linspace(5,50,ndep)
+#dis = np.linspace(30,95,ndis)
+#sPdP = np.load('./tables/sSdS5to50.npy')
+#fppdp = interpolate.interp2d(dis, dep, sPdP, kind='linear')
+#fspdp = interpolate.interp2d(dis, dep, sPdP, kind='linear')
+#
+#pPdP = np.load('./tables/teleS5to50.npy')
+#ftelep = interpolate.interp2d(dis, dep, pPdP, kind='linear')
 
-pPdP = np.load('./tables/teleS5to50.npy')
-ftelep = interpolate.interp2d(dis, dep, pPdP, kind='linear')
+#ndepth = 301
+#ndis = 131
+#dep = np.linspace(30,330,ndepth)
+#dis = np.linspace(30,95,ndis)
+#pPdP = np.load('./tables/sSdS30to330.npy')
+#fppdp = interpolate.interp2d(dis, dep, pPdP, kind='linear')
+#fspdp = interpolate.interp2d(dis, dep, pPdP, kind='linear')
+#
+#pPdP = np.load('./tables/teleS30to330.npy')
+#ftelep = interpolate.interp2d(dis, dep, pPdP, kind='linear')
+#
 
 #ndepth = 301
 #ndis = 131
@@ -726,6 +747,20 @@ ftelep = interpolate.interp2d(dis, dep, pPdP, kind='linear')
 #
 #pPdP = np.load('./tables/tele30to330.npy')
 #ftelep = interpolate.interp2d(dis, dep, pPdP, kind='linear')
+
+ndep = 73
+ndis = 111
+dep = np.linspace(350,710,ndep)
+dis = np.linspace(40,95,ndis)
+
+pPdP = np.load('./tables/pPdP350to700.npy')
+fppdp = interpolate.interp2d(dis, dep, pPdP, kind='linear')
+
+sPdP = np.load('./tables/sPdP350to700.npy')
+fspdp = interpolate.interp2d(dis, dep, sPdP, kind='linear')
+
+pPdP = np.load('./tables/teleP350to700.npy')
+ftelep = interpolate.interp2d(dis, dep, pPdP, kind='linear')
 
 eqs = open(''.join([eqdir,'/EVENTS-INFO/event_list_pickle']),'rb')
 # for py3
